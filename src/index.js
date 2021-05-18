@@ -3,11 +3,9 @@ import countryCardTpl from './templates/country-card.hbs';
 import countryListTpl from './templates/country-list.hbs';
 import API from './js/fetchCountries';
 import _debounce from 'debounce';
-import { error } from '@pnotify/core';
+import { error, notice } from '@pnotify/core';
 import '@pnotify/core/dist/PNotify.css';
 import '@pnotify/core/dist/BrightTheme.css';
-
-// console.log(countryCardTpl);
 
 const refs = {
   cardContainer: document.querySelector('.js-card-container'),
@@ -27,26 +25,34 @@ function onSearch(e) {
       const list = countryListTpl(country);
       if (country.length > 10) {
         clearCardContainer();
-        pnotify();
-      }
-      if (country.length > 1 && country.length < 10) {
-        clearCardContainer();
-        refs.cardContainer.insertAdjacentHTML('beforeend', list);
-      }
-
-      if (country.length == 1) {
-        clearCardContainer();
-        refs.cardContainer.insertAdjacentHTML('beforeend', markup);
+        pnotify(error);
+      } else if (country.length > 1 && country.length < 10) {
+        createCardContainer(list);
+      } else if (country.length == 1) {
+        createCardContainer(markup);
+      } else {
+        pnotify(notice);
       }
     })
     .catch(onFetchErr());
 }
 
-function pnotify() {
+function createCardContainer(tpl) {
+  clearCardContainer();
+  refs.cardContainer.insertAdjacentHTML('beforeend', tpl);
+}
+
+function pnotify(param) {
   error({
     title: 'Uh Oh!',
     text: 'Too many matches found. Please enter a more specific quare',
-    delay: 2500,
+    delay: 1500,
+    closerHover: true,
+  });
+  notice({
+    title: 'Uh Oh!',
+    text: 'нет такой страны',
+    delay: 1500,
     closerHover: true,
   });
 }
