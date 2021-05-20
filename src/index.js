@@ -20,6 +20,7 @@ function onSearch(e) {
 
   API(searchQuery)
     .then(country => {
+      console.log(country);
       const markup = countryCardTpl(country);
       const list = countryListTpl(country);
       if (country.length > 10) {
